@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Qué tan bien funciona · Liga MX en probabilidades</title><link rel="stylesheet" href="style.css"></head>
+<body><header><h1>Liga MX en probabilidades</h1>
+<nav><a href="index.html">Próximos partidos</a><a href="equipos.html">Equipos</a><a href="rendimiento.html">Qué tan bien funciona</a></nav></header>
+<main><h2>Qué tan bien funciona</h2>
+<p>Los modelos se ajustaron solo con partidos anteriores a 2023 y se evalúan con los
+1275 partidos jugados desde entonces. Mostramos todos los resultados, también cuando el modelo pierde.
+En log-loss y Brier, <strong>menor es mejor</strong>; una diferencia positiva significa que el modelo es peor que el mercado.</p>
+<h2>Contra Pinnacle (982 partidos con cuota de cierre)</h2>
+<div class="scroll"><table><thead><tr><th>Modelo</th><th class="n">Log-loss</th><th class="n">Brier</th><th class="n">Diferencia</th><th class="n">IC 95%</th><th class="n">Lectura</th></tr></thead><tbody><tr><td>Elo</td><td class="n">1.0055</td><td class="n">0.6009</td><td class="n">+0.0235</td><td class="n">+0.0110 a +0.0357</td><td class="n">peor que el mercado</td></tr><tr><td>Dixon-Coles</td><td class="n">1.0027</td><td class="n">0.5991</td><td class="n">+0.0208</td><td class="n">+0.0093 a +0.0321</td><td class="n">peor que el mercado</td></tr><tr><td>Logística</td><td class="n">1.0039</td><td class="n">0.6000</td><td class="n">+0.0220</td><td class="n">+0.0100 a +0.0337</td><td class="n">peor que el mercado</td></tr><tr><td>Pinnacle</td><td class="n">0.9820</td><td class="n">0.5846</td><td class="n">—</td><td class="n">—</td><td class="n">referencia</td></tr></tbody></table></div>
+<h2>Contra el promedio del mercado (los 1275 partidos)</h2>
+<p class="mut">La fuente dejó de publicar cuotas de Pinnacle en la segunda mitad de 2025/26, así que esta tabla cubre también los partidos más recientes.</p>
+<div class="scroll"><table><thead><tr><th>Modelo</th><th class="n">Log-loss</th><th class="n">Brier</th><th class="n">Diferencia</th><th class="n">IC 95%</th><th class="n">Lectura</th></tr></thead><tbody><tr><td>Elo</td><td class="n">1.0156</td><td class="n">0.6070</td><td class="n">+0.0266</td><td class="n">+0.0162 a +0.0371</td><td class="n">peor que el mercado</td></tr><tr><td>Dixon-Coles</td><td class="n">1.0117</td><td class="n">0.6048</td><td class="n">+0.0227</td><td class="n">+0.0133 a +0.0321</td><td class="n">peor que el mercado</td></tr><tr><td>Logística</td><td class="n">1.0133</td><td class="n">0.6058</td><td class="n">+0.0243</td><td class="n">+0.0143 a +0.0344</td><td class="n">peor que el mercado</td></tr><tr><td>Promedio del mercado</td><td class="n">0.9890</td><td class="n">0.5893</td><td class="n">—</td><td class="n">—</td><td class="n">referencia</td></tr></tbody></table></div>
+<h2>Calibración</h2>
+<p>Si el modelo dice 40%, ¿ocurre cerca del 40% de las veces? Cuanto más pegada a la diagonal, mejor.</p>
+<img src="calibracion.png" alt="Curva de calibración de los modelos y de Pinnacle" width="780" height="780">
+<p class="mut">Tabla del modelo Dixon-Coles (error de calibración esperado: 0.013).</p>
+<div class="scroll"><table><thead><tr><th>Probabilidad predicha</th><th class="n">Casos</th><th class="n">Promedio predicho</th><th class="n">Frecuencia observada</th></tr></thead><tbody><tr><td>0.0-0.1</td><td class="n">19</td><td class="n">9%</td><td class="n">16%</td></tr><tr><td>0.1-0.2</td><td class="n">364</td><td class="n">16%</td><td class="n">16%</td></tr><tr><td>0.2-0.3</td><td class="n">1708</td><td class="n">26%</td><td class="n">25%</td></tr><tr><td>0.3-0.4</td><td class="n">703</td><td class="n">34%</td><td class="n">35%</td></tr><tr><td>0.4-0.5</td><td class="n">501</td><td class="n">45%</td><td class="n">44%</td></tr><tr><td>0.5-0.6</td><td class="n">349</td><td class="n">55%</td><td class="n">57%</td></tr><tr><td>0.6-0.7</td><td class="n">143</td><td class="n">64%</td><td class="n">71%</td></tr><tr><td>0.7-0.8</td><td class="n">38</td><td class="n">73%</td><td class="n">71%</td></tr></tbody></table></div>
+<h2>Log-loss por temporada</h2>
+<img src="logloss_temporada.png" alt="Log-loss por temporada de cada modelo y del mercado" width="910" height="585">
+<p class="mut">2022/2023 solo incluye el Clausura 2023. El punto de Pinnacle en 2025/2026 cubre únicamente los partidos con cuota de Pinnacle, por lo que no es directamente comparable con las demás líneas de esa temporada.</p>
+<h2>Limitaciones</h2>
+<ul><li>Solo usa resultados y marcadores; no sabe de lesiones, alineaciones ni xG.</li>
+<li>Se compara contra cuotas de cierre, que ya incorporan toda la información disponible antes del partido.</li>
+<li>La liguilla se trata como cualquier otro partido.</li></ul>
+<p class="mut">Datos: football-data.co.uk, 4743 partidos de 2012-07-21 a 2026-09-28. Versión del modelo 0.1.0.</p></main>
+<footer><p><strong>Solo informativo. Sin dinero real. Mayores de 18. Si el juego te afecta, busca ayuda.</strong></p>
+<p>Proyecto de análisis estadístico. No es un servicio de pronósticos ni de apuestas, no recomienda apostar y no tiene relación con casas de apuestas.</p></footer>
+</body></html>

@@ -96,6 +96,7 @@ En log-loss y Brier, <strong>menor es mejor</strong>; una diferencia positiva si
 {_table(["Probabilidad predicha", "Casos", "Promedio predicho", "Frecuencia observada"], cal)}
 <h2>Log-loss por temporada</h2>
 <img src="logloss_temporada.png" alt="Log-loss por temporada de cada modelo y del mercado" width="910" height="585">
+<p class="mut">2022/2023 solo incluye el Clausura 2023. El punto de Pinnacle en 2025/2026 cubre únicamente los partidos con cuota de Pinnacle, por lo que no es directamente comparable con las demás líneas de esa temporada.</p>
 <h2>Limitaciones</h2>
 <ul><li>Solo usa resultados y marcadores; no sabe de lesiones, alineaciones ni xG.</li>
 <li>Se compara contra cuotas de cierre, que ya incorporan toda la información disponible antes del partido.</li>
