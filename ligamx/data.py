@@ -1,4 +1,6 @@
 """Carga y limpieza de MEX.csv (football-data.co.uk) y de data/fixtures.csv."""
+import gzip
+import json
 import urllib.request
 
 import numpy as np
@@ -89,3 +91,50 @@ def with_fixtures(df, fx):
     extra = fx[["date", "home", "away"]].copy()
     extra["torneo"] = extra.date.map(torneo)
     return pd.concat([df, extra], ignore_index=True)
+
+
+# --- Calendario automático (ESPN, sin clave; API no oficial, puede cambiar sin aviso) ---
+
+ESPN = "https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/scoreboard"
+ESPN_NAMES = {
+    "América": "Club America", "Atlante": "Atlante", "Atlas": "Atlas", "Atlético de San Luis": "Atl. San Luis",
+    "Cruz Azul": "Cruz Azul", "FC Juárez": "Juarez", "Guadalajara": "Guadalajara Chivas", "León": "Club Leon",
+    "Monterrey": "Monterrey", "Necaxa": "Necaxa", "Pachuca": "Pachuca", "Puebla": "Puebla",
+    "Pumas UNAM": "UNAM Pumas", "Querétaro": "Queretaro", "Santos": "Santos Laguna", "Tigres UANL": "Tigres UANL",
+    "Tijuana": "Club Tijuana", "Toluca": "Toluca", "Mazatlán FC": "Mazatlan FC",
+}
+
+
+def _get_json(url):
+    with urllib.request.urlopen(url, timeout=30) as r:
+        body = r.read()
+    if body[:2] == b"\x1f\x8b":  # ESPN a veces responde comprimido aunque no se pida
+        body = gzip.decompress(body)
+    return json.loads(body)
+
+
+def parse_espn(payload):
+    """Partidos aún no iniciados: lista de (kickoff UTC, local, visita) con nombres de MEX.csv."""
+    out = []
+    for e in payload.get("events", []):
+        c = e["competitions"][0]
+        if c["status"]["type"]["state"] != "pre":
+            continue
+        t = {x["homeAway"]: x["team"]["displayName"] for x in c["competitors"]}
+        unknown = set(t.values()) - set(ESPN_NAMES)
+        if unknown:
+            raise ValueError(f"Equipo de ESPN sin equivalencia en ESPN_NAMES: {sorted(unknown)}")
+        out.append((pd.Timestamp(e["date"]).tz_convert(None), ESPN_NAMES[t["home"]], ESPN_NAMES[t["away"]]))
+    return out
+
+
+def fetch_fixtures(path, days=7, today=None):
+    """Reescribe fixtures.csv con los partidos de los próximos `days` días. Sin cuotas."""
+    today = today or pd.Timestamp.now("UTC").tz_convert(None).normalize()
+    cal = {pd.Timestamp(d).tz_convert(None).normalize() for d in _get_json(ESPN)["leagues"][0]["calendar"]}
+    dates = sorted({today} | {d for d in cal if today <= d <= today + pd.Timedelta(days=days)})
+    games = sorted({g for d in dates for g in parse_espn(_get_json(f"{ESPN}?dates={d:%Y%m%d}"))})
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write("Date,Time,Home,Away,OddsH,OddsD,OddsA\n")
+        f.writelines(f"{k:%d/%m/%Y},{k:%H:%M},{h},{a},,,\n" for k, h, a in games)
+    return len(games)

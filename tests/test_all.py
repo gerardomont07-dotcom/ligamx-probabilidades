@@ -57,6 +57,17 @@ def test_fixtures(tmp_path):
         data.load_fixtures(p, {"Toluca"})
 
 
+def test_calendario_espn(df):
+    current = df[df.season == df.season.iloc[-1]]
+    assert set(current.home) <= set(data.ESPN_NAMES.values())  # todo equipo actual tiene equivalencia
+    ev = lambda state, home: {"date": "2026-10-10T01:00Z", "competitions": [{"status": {"type": {"state": state}},
+        "competitors": [{"homeAway": "home", "team": {"displayName": home}}, {"homeAway": "away", "team": {"displayName": "León"}}]}]}
+    got = data.parse_espn({"events": [ev("pre", "Puebla"), ev("post", "Toluca")]})
+    assert got == [(pd.Timestamp("2026-10-10 01:00"), "Puebla", "Club Leon")]  # el ya jugado se omite
+    with pytest.raises(ValueError, match="Inventado"):
+        data.parse_espn({"events": [ev("pre", "Inventado")]})
+
+
 # --- modelos ---
 
 def _all_models(d):

@@ -1,6 +1,6 @@
 """Regenera datos, modelos, evaluación y sitio:  python run.py
    --tune       reajusta hiperparámetros (solo con datos anteriores a 2023)
-   --offline    no vuelve a descargar MEX.csv
+   --offline    no descarga MEX.csv ni el calendario
    --no-commit  no hace commit de git al terminar"""
 import argparse
 import json
@@ -68,6 +68,10 @@ def main():
             data.download(RAW)
         except OSError as e:
             print(f"AVISO: no se pudo descargar MEX.csv ({e}); se usa la copia local.")
+        try:
+            print(f"Calendario: {data.fetch_fixtures(FIXTURES)} próximos partidos (ESPN)")
+        except (OSError, ValueError, KeyError) as e:
+            print(f"AVISO: no se pudo actualizar el calendario ({e}); se usa fixtures.csv tal como está.")
     df = data.load_matches(RAW)
     print(f"{len(df)} partidos, {df.date.min():%Y-%m-%d} a {df.date.max():%Y-%m-%d}; "
           f"{df.pin_h.isna().mean():.1%} sin cuota de Pinnacle")

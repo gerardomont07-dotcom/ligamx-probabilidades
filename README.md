@@ -12,7 +12,7 @@ No es un servicio de picks ni de apuestas, no promete ganancias y no enlaza a ca
 python -m venv .venv
 .venv\Scripts\activate          # en macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-pytest                          # 13 pruebas
+pytest                          # 14 pruebas
 python run.py                   # descarga datos, corre modelos, evalúa y regenera docs/
 ```
 
@@ -24,7 +24,10 @@ GitHub Pages se sirve la carpeta `docs/` de la rama principal.
 
 ### Próximos partidos
 
-`MEX.csv` solo trae partidos ya jugados. Los próximos se cargan a mano en `data/fixtures.csv`:
+`MEX.csv` solo trae partidos ya jugados. En cada ejecución, `run.py` baja el calendario de los
+próximos 7 días desde la API pública de ESPN (sin clave, no oficial: puede cambiar sin aviso) y
+reescribe `data/fixtures.csv`. Si la descarga falla, usa el archivo tal como esté, así que
+también se puede llenar a mano:
 
 ```
 Date,Time,Home,Away,OddsH,OddsD,OddsA
@@ -32,7 +35,12 @@ Date,Time,Home,Away,OddsH,OddsD,OddsA
 ```
 
 Hora en UTC, nombres de equipo como en `MEX.csv`, cuotas opcionales (solo se muestran como
-probabilidad implícita de referencia). Si un nombre no existe, `run.py` falla y lista los válidos.
+probabilidad implícita de referencia; la descarga automática las deja vacías y borra las que
+se hayan puesto a mano). Si un nombre no existe, `run.py` falla y lista los válidos.
+
+Cada partido se registra una sola vez por versión del modelo, la primera vez que aparece en el
+calendario. `MEX.csv` se actualiza con algunos días de retraso, así que una predicción puede
+no incluir los resultados de la jornada inmediata anterior.
 
 ### Registro auditable
 
