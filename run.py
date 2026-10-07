@@ -106,11 +106,11 @@ def main():
                  "mkt": None if np.isnan(r.mkt_h) else [r.mkt_h, r.mkt_d, r.mkt_a]}
                 for i, r in enumerate(fx.itertuples())]
     added = predlog.append(LOG, upcoming)
-    site.build("site", upcoming, team_table(df, ratings), metrics, "results")
-    print(f"Sitio regenerado en site/. Predicciones nuevas registradas: {added}")
+    site.build("docs", upcoming, team_table(df, ratings), metrics, "results")
+    print(f"Sitio regenerado en docs/. Predicciones nuevas registradas: {added}")
 
     if not args.no_commit:
-        subprocess.run(["git", "add", "data", "results", "site", PARAMS], check=True)
+        subprocess.run(["git", "add", "data", "results", "docs", PARAMS], check=True)
         subprocess.run(["git", "commit", "-q", "-m", f"Regeneración automática (modelo v{VERSION})"])
 
 

@@ -13,14 +13,14 @@ python -m venv .venv
 .venv\Scripts\activate          # en macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 pytest                          # 13 pruebas
-python run.py                   # descarga datos, corre modelos, evalúa y regenera site/
+python run.py                   # descarga datos, corre modelos, evalúa y regenera docs/
 ```
 
 Opciones de `run.py`: `--tune` (reajusta hiperparámetros, solo con datos anteriores a 2023),
 `--offline` (no descarga), `--no-commit` (no hace commit de git).
 
-El sitio queda en `site/` (HTML + CSS, sin JavaScript ni backend). Para publicarlo en
-GitHub Pages basta servir esa carpeta.
+El sitio queda en `docs/` (HTML + CSS, sin JavaScript ni backend). Para publicarlo en
+GitHub Pages se sirve la carpeta `docs/` de la rama principal.
 
 ### Próximos partidos
 
