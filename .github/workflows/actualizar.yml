@@ -1,0 +1,29 @@
+name: Actualizar predicciones
+
+on:
+  schedule:
+    - cron: "0 12 * * *"  # diario, 12:00 UTC (6:00 en CDMX), antes de cualquier partido
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: actualizar
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+      - name: Regenerar y registrar predicciones
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python run.py
+          git push
